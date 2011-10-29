@@ -1,8 +1,5 @@
-<div class="row">
-<div class="span6">
-	Hey
-</div>
-<div class="span10">
-	Hey 2
-</div>
-</div>
+<form action="/bookmarks" method="POST" id="new_bookmark">
+	<input type="text" size="30" name="url" value="Paste URL Here" />
+	<input type="submit" value="Go!" />
+</form>
+<%= @github.user.inspect %>

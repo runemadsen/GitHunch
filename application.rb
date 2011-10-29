@@ -1,28 +1,25 @@
 require 'bundler'
 Bundler.require
+require './github'
 require './github_auth'
+require './helpers'
 
 enable :sessions
 
-# put stuff into helpers
-
-def github_client
-  client = GithubAuth.new('ea0fe732615aaa5329f8', 'c872fc1aa1927d1b1635f12e072ef02e14c9e1d2', :authorize_url => 'https://github.com/login/oauth/authorize', :token_url => 'https://github.com/login/oauth/access_token')
-end
-
-def require_user
-  unless session[:access_token]
-    redirect github_client.authorize_url
-  end
-end
-
 get '/' do
+
   require_user
   
-  "#{session[:access_token]}"
+  @github = Github.new(session[:access_token])
+  
+  erb :index
 end
 
 get '/oauth' do
   session[:access_token] = github_client.token(params[:code])
   redirect '/'
+end
+
+post '/bookmarks' do
+    "Post to Github"
 end

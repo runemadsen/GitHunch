@@ -1,0 +1,30 @@
+body {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.container {
+	width: 600px;
+	margin: 0 auto;
+}
+
+/*	New Bookmark
+_________________________________________________________________ */
+
+#new_bookmark input[type=text] {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+	border: 1px solid #999;
+	font-size: 18px;
+	width: 500px;
+}
+
+#new_bookmark input[type=submit] {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+	border: 1px solid #999;
+	font-size: 16px;
+}

@@ -9,7 +9,12 @@ class GithubAuth
   end
   
   def token(code)
-    @client.auth_code.get_token(code).token
+    @token ||= @client.auth_code.get_token(code)
+    @token.token
+  end
+  
+  def repos
+    @repos ||= @token.get('http://api.github.com/user/repos')
   end
   
 end
