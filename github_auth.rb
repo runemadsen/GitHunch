@@ -9,7 +9,7 @@ class GithubAuth
   end
   
   def token(code)
-    @client.get_token.get_access_token(code)  
+    @client.auth_code.get_token.get_access_token(code)
   end
   
 end
