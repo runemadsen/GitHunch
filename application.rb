@@ -14,5 +14,9 @@ end
 
 get '/oauth' do
   session[:access_token] = github_client.token(params[:code])
-  "Succes: #{session[:access_token]}"
+  redirect '/me'
+end
+
+get '/me' do
+  "#{session[:access_token]}"
 end
