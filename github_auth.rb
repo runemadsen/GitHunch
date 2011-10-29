@@ -9,7 +9,9 @@ class GithubAuth
   end
   
   def token(code)
-    @client.auth_code.get_token.get_access_token(code)
+    # @client.auth_code.get_token.get_access_token(code).token
+    access_token = @client.auth_code.get_token.get_access_token(params[:code], :redirect_uri => 'http://githunch.heroku.com/oauth')
+    access_token.token
   end
   
 end
