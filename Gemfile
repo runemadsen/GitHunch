@@ -1,5 +1,5 @@
 source :rubygems
 gem 'sinatra'
 gem 'json'
-gem 'oauth2'
 gem 'httparty'
+gem 'github-oauth', :path => '/Users/rune/Projects/gems/github-oauth'
