@@ -1,11 +1,11 @@
 class GithubAuth
   
-  def initialize(client_id, client_secret, options)
-    @client = OAuth2::Client.new('ea0fe732615aaa5329f8', 'c872fc1aa1927d1b1635f12e072ef02e14c9e1d2', options)
+  def initialize(client_id, client_secret)
+    @client = OAuth2::Client.new(client_id, client_secret, :authorize_url => 'https://github.com/login/oauth/authorize', :token_url => 'https://github.com/login/oauth/access_token')
   end
   
   def authorize_url
-    @client.auth_code.authorize_url
+    @client.auth_code.authorize_url(:scope => 'repo,gist')
   end
   
   def token(code)
