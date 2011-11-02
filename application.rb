@@ -1,42 +1,48 @@
 require 'bundler'
 Bundler.require
-require './github'
+require './github/github'
 require './helpers'
 
 enable :sessions
 
+if settings.environment == :development
+  credentials = { :id => "ea0fe732615aaa5329f8", :secret => "c872fc1aa1927d1b1635f12e072ef02e14c9e1d2"}
+else
+  credentials = { :id => "9d90f769f7a70a82acb7", :secret => "4b7985b7bc627fe9a1e7fed26f7529d6de9a25ca"}
+end
+
 get '/' do
-
-  # session[:access_token] = nil
-
+  
+  # check oauth
   unless session[:access_token]
-    redirect GithubOAuth.authorize_url('ea0fe732615aaa5329f8', 'c872fc1aa1927d1b1635f12e072ef02e14c9e1d2')
+    redirect GithubOAuth.authorize_url(credentials[:id], credentials[:secret])
   end
   
-  @github = Github.new(session[:access_token])
+  @user = Github::User.new(session[:access_token])
   
-  # if repo doesn't exist, we create it
-  if(@github.repo("githunch_bookmarks").response.is_a?(Net::HTTPNotFound))
+  if(not @user.has_repo?("githunch_bookmarks"))
     
-    puts "Creating repo"
-    @github.create_repo("githunch_bookmarks")
+    repo = @user.create_repo("githunch_bookmarks", {
+      :description => "Repository for Githunch Bookmarks",
+      :homepage => "http://githunch.heroku.com",
+      :public => true,
+      :has_issues => false,
+      :has_wiki => false,
+      :has_downloads => false
+    })
     
-    puts "Creating Tree"
-    tree_result = @github.create_tree("githunch_bookmarks", "[]", "bookmarks.json")
-    puts "Tree sha #{tree_result["sha"]}"
-    
-    puts "Creating commit"
-    commit_result = @github.create_initial_commit("githunch_bookmarks", tree_result["sha"], "Creating githunch files")
-    puts "Commit sha #{commit_result["sha"]}"
-    
-    puts "Creating ref"
-    ref_result = @github.create_ref("githunch_bookmarks", "refs/heads/master", commit_result["sha"])
-    puts "Ref: #{ref_result["sha"].inspect}"
-    
+    blob = Github::Blob.new("this is my content", "bookmarks.json")
+    tree = repo.create_tree([blob])
+    commit = repo.create_initial_commit(tree.sha, "This is my commit text")
+    reference = repo.create_ref("refs/heads/master", commit.sha)
   end
   
+  # find bookmarks file, dummy code
+  repo = @user.find_repo("githunch_bookmarks")
+  blob = repo.find_ref("heads/master").file("bookmarks.json")
+
   erb :index
-  
+
 end
 
 get '/oauth' do
@@ -45,5 +51,7 @@ get '/oauth' do
 end
 
 post '/bookmarks' do
-    "Post to Github"
+  @user = Github::User.new(session[:access_token])
+  bookmark = Bookmark.new(params[:bookmark])
+  #  more stuff here
 end
