@@ -1,7 +1,9 @@
 require 'bundler'
 Bundler.require
-require './github/github'
 require './helpers'
+
+# TODO: Change initializers to hash
+# TODO: When querying the API, throw validation errors if user, repo, etc is not set
 
 enable :sessions
 
@@ -11,6 +13,8 @@ else
   credentials = { :id => "9d90f769f7a70a82acb7", :secret => "4b7985b7bc627fe9a1e7fed26f7529d6de9a25ca"}
 end
 
+
+
 get '/' do
   
   # check oauth
@@ -18,7 +22,10 @@ get '/' do
     redirect GithubOAuth.authorize_url(credentials[:id], credentials[:secret])
   end
   
-  @user = Github::User.new(session[:access_token])
+  @user = GithubApi::User.new(session[:access_token])
+  
+  # if the user doesn't have write permissions, get a new cookie
+  # (happens if token is revoked from github)
   
   if(not @user.has_repo?("githunch_bookmarks"))
     
@@ -30,16 +37,45 @@ get '/' do
       :has_wiki => false,
       :has_downloads => false
     })
+    puts "Repo"
+    puts repo.data.inspect
     
-    blob = Github::Blob.new("this is my content", "bookmarks.json")
-    tree = repo.create_tree([blob])
-    commit = repo.create_initial_commit(tree.sha, "This is my commit text")
-    reference = repo.create_ref("refs/heads/master", commit.sha)
+    file = GithubApi::Blob.new("this is my content", "bookmarks.json")
+    tree = repo.create_tree([file])
+    puts "Tree"
+    puts tree.data.inspect
+    
+    commit = repo.create_initial_commit(tree.data["sha"], "This is my commit text")
+    puts "Commit"
+    puts commit.data.inspect
+    
+    reference = repo.create_ref("refs/heads/master", commit.data["sha"])
+    puts "Reference"
+    puts reference.data.inspect 
+  else
+    repo = @user.repo("githunch_bookmarks")
+    
+    puts "Ref"
+    ref = repo.ref("heads/master")
+    puts ref.data.inspect
+    
+    puts "Commit"
+    commit = ref.commit
+    puts commit.data.inspect
+    
+    puts "Tree"
+    tree = commit.tree
+    puts tree.data.inspect
+    
+    
+    
+    # file = repo.ref("heads/master").commit.tree.file("bookmarks.json")
+
   end
   
   # find bookmarks file, dummy code
-  repo = @user.find_repo("githunch_bookmarks")
-  blob = repo.find_ref("heads/master").file("bookmarks.json")
+  # 
+  # blob = repo.ref("heads/master").file("bookmarks.json")
 
   erb :index
 
