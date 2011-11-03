@@ -40,7 +40,7 @@ get '/' do
     puts "Repo"
     puts repo.data.inspect
     
-    file = GithubApi::Blob.new("this is my content", "bookmarks.json")
+    file = GithubApi::Blob.new(:content => "this is my content", :path => "bookmarks.json")
     tree = repo.create_tree([file])
     puts "Tree"
     puts tree.data.inspect
@@ -55,21 +55,9 @@ get '/' do
   else
     repo = @user.repo("githunch_bookmarks")
     
-    puts "Ref"
-    ref = repo.ref("heads/master")
-    puts ref.data.inspect
-    
-    puts "Commit"
-    commit = ref.commit
-    puts commit.data.inspect
-    
-    puts "Tree"
-    tree = commit.tree
-    puts tree.data.inspect
-    
-    
-    
-    # file = repo.ref("heads/master").commit.tree.file("bookmarks.json")
+    puts "Blob"
+    blob = repo.ref("heads/master").commit.tree.file("bookmarks.json")
+    puts blob.inspect
 
   end
   
