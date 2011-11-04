@@ -13,8 +13,6 @@ else
   credentials = { :id => "9d90f769f7a70a82acb7", :secret => "4b7985b7bc627fe9a1e7fed26f7529d6de9a25ca"}
 end
 
-
-
 get '/' do
   
   # check oauth
@@ -37,33 +35,19 @@ get '/' do
       :has_wiki => false,
       :has_downloads => false
     })
-    puts "Repo"
-    puts repo.data.inspect
     
     file = GithubApi::Blob.new(:content => "this is my content", :path => "bookmarks.json")
     tree = repo.create_tree([file])
-    puts "Tree"
-    puts tree.data.inspect
-    
-    commit = repo.create_initial_commit(tree.data["sha"], "This is my commit text")
-    puts "Commit"
-    puts commit.data.inspect
-    
+    commit = repo.create_initial_commit(tree.data["sha"], "This is my commit text")    
     reference = repo.create_ref("refs/heads/master", commit.data["sha"])
-    puts "Reference"
-    puts reference.data.inspect 
+    
+    # just dummy for now
+    @bookmarks = {}
   else
     repo = @user.repo("githunch_bookmarks")
-    
-    puts "Blob"
     blob = repo.ref("heads/master").commit.tree.file("bookmarks.json")
-    puts blob.inspect
-
+    @bookmarks = JSON.parse(blob.content)
   end
-  
-  # find bookmarks file, dummy code
-  # 
-  # blob = repo.ref("heads/master").file("bookmarks.json")
 
   erb :index
 
