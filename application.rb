@@ -8,9 +8,9 @@ require './helpers'
 enable :sessions
 
 if settings.environment == :development
-  credentials = { :id => "ea0fe732615aaa5329f8", :secret => "c872fc1aa1927d1b1635f12e072ef02e14c9e1d2"}
+  credentials = { :id => "REPLACEME", :secret => "REPLACEME"}
 else
-  credentials = { :id => "9d90f769f7a70a82acb7", :secret => "4b7985b7bc627fe9a1e7fed26f7529d6de9a25ca"}
+  credentials = { :id => "REPLACEME", :secret => "REPLACEME"}
 end
 
 get '/' do
@@ -54,7 +54,7 @@ get '/' do
 end
 
 get '/oauth' do
-  session[:access_token] = GithubOAuth.token('ea0fe732615aaa5329f8', 'c872fc1aa1927d1b1635f12e072ef02e14c9e1d2', params[:code])
+  session[:access_token] = GithubOAuth.token('REPLACEME', 'REPLACEME', params[:code])
   redirect '/'
 end
 
